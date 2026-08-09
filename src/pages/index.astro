@@ -5,6 +5,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 const allPosts = await getCollection("posts", ({ data }) => !data.draft);
 const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
+const [featured, ...rest] = posts;
+
 function excerpt(body: string, length = 220) {
   const plain = body
     .replace(/^---[\s\S]*?---/, "")
@@ -13,28 +15,50 @@ function excerpt(body: string, length = 220) {
     .trim();
   return plain.length > length ? `${plain.slice(0, length).trim()}…` : plain;
 }
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+}
 ---
 
 <BaseLayout title="Unattended Runs — notes on harness engineering">
   <h1 class="visually-hidden">Unattended Runs — notes on harness engineering</h1>
-  <ul class="post-list">
-    {
-      posts.map((post) => (
-        <li>
-          <h2>
-            <a href={`/${post.slug}/`}>{post.data.title}</a>
-          </h2>
-          <div class="post-meta">
-            {post.data.pubDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-          </div>
-          <p>{post.data.description || excerpt(post.body)}</p>
-          <div>
-            {post.data.tags.map((tag) => (
-              <span class="tag">{tag}</span>
-            ))}
-          </div>
-        </li>
-      ))
-    }
-  </ul>
+
+  {
+    featured && (
+      <section class="hero">
+        <p class="hero-kicker">Latest run</p>
+        <h2>
+          <a href={`/${featured.slug}/`}>{featured.data.title}</a>
+        </h2>
+        <div class="post-meta">{formatDate(featured.data.pubDate)}</div>
+        <p class="hero-excerpt">{featured.data.description || excerpt(featured.body, 260)}</p>
+        <a class="read-more" href={`/${featured.slug}/`}>Read the post &rarr;</a>
+      </section>
+    )
+  }
+
+  {
+    rest.length > 0 && (
+      <>
+        <p class="section-label">Earlier runs</p>
+        <ul class="post-grid">
+          {rest.map((post) => (
+            <li class="post-card">
+              <h3>
+                <a href={`/${post.slug}/`}>{post.data.title}</a>
+              </h3>
+              <div class="post-meta">{formatDate(post.data.pubDate)}</div>
+              <p>{post.data.description || excerpt(post.body)}</p>
+              <div class="tag-row">
+                {post.data.tags.map((tag) => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </>
+    )
+  }
 </BaseLayout>

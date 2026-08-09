@@ -1,0 +1,34 @@
+---
+// Newsletter signup form. There is no backend wired up yet.
+//
+// TODO: this form has no real provider behind it. Point NEWSLETTER_FORM_ACTION_URL
+// in src/config/site.ts at a real provider's form endpoint (e.g. Buttondown,
+// ConvertKit) and adjust the `name` attributes below to match that provider's
+// expected field names before this can accept real signups. Until then the
+// form intentionally does nothing on submit rather than pretending to succeed.
+import { NEWSLETTER_FORM_ACTION_URL } from "../config/site";
+
+const isWired = Boolean(NEWSLETTER_FORM_ACTION_URL);
+---
+
+<div class="newsletter-signup">
+  <h2>Get new posts by email</h2>
+  {
+    isWired ? (
+      <form method="post" action={NEWSLETTER_FORM_ACTION_URL}>
+        <input type="text" name="name" placeholder="Name" autocomplete="name" />
+        <input type="email" name="email" placeholder="Email address" autocomplete="email" required />
+        <button type="submit">Subscribe</button>
+      </form>
+    ) : (
+      <form onsubmit="event.preventDefault(); this.querySelector('.fine-print').textContent = 'Signup is not wired up yet — no email provider is configured.';">
+        <input type="text" name="name" placeholder="Name" autocomplete="name" disabled />
+        <input type="email" name="email" placeholder="Email address" autocomplete="email" disabled />
+        <button type="submit" disabled>Subscribe</button>
+      </form>
+    )
+  }
+  <p class="fine-print">
+    {isWired ? "No spam, unsubscribe anytime." : "Signup form is not connected to an email provider yet."}
+  </p>
+</div>

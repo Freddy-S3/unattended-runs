@@ -40,7 +40,7 @@ const related = allPosts
     <div class="post-meta">
       {post.data.pubDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
     </div>
-    <div>
+    <div class="tag-row">
       {post.data.tags.map((tag) => (
         <span class="tag">{tag}</span>
       ))}
@@ -74,5 +74,5 @@ const related = allPosts
     }
   </article>
 
-  <p><a href="/">&larr; Back to all posts</a></p>
+  <p><a class="back-link" href="/">&larr; Back to all posts</a></p>
 </BaseLayout>

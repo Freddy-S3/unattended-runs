@@ -1,0 +1,88 @@
+---
+import { ADSENSE_PUBLISHER_ID } from "../config/ads";
+import { SITE_NAME, SITE_DESCRIPTION, ANALYTICS_SITE_ID, ANALYTICS_SCRIPT_SRC } from "../config/site";
+import AdSlot from "../components/AdSlot.astro";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  type?: "website" | "article";
+  pubDate?: Date;
+  ogImage?: string;
+}
+
+const {
+  title,
+  description = SITE_DESCRIPTION,
+  type = "website",
+  pubDate,
+  ogImage,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const resolvedOgImage = ogImage ? new URL(ogImage, Astro.site).toString() : new URL("/og-default.svg", Astro.site).toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><text y=%2213%22 font-size=%2213%22>%E2%9A%99%EF%B8%8F</text></svg>" />
+    <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href={new URL("rss.xml", Astro.site)} />
+
+    <!-- OpenGraph -->
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:image" content={resolvedOgImage} />
+    {pubDate && <meta property="article:published_time" content={pubDate.toISOString()} />}
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={resolvedOgImage} />
+
+    <!-- AdSense loader. Loaded async so it never blocks render. Publisher ID is a
+         placeholder until src/config/ads.ts is updated with a real one. -->
+    <script
+      async
+      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}`}
+      crossorigin="anonymous"></script>
+
+    <!-- Privacy-respecting analytics. No-op until ANALYTICS_SITE_ID is set in
+         src/config/site.ts — nothing loads or sends data before then. -->
+    {ANALYTICS_SITE_ID && <script defer data-domain={ANALYTICS_SITE_ID} src={ANALYTICS_SCRIPT_SRC}></script>}
+  </head>
+  <body>
+    <div class="site">
+      <header class="site-header">
+        <a class="site-title" href="/">{SITE_NAME}</a>
+        <p>Notes on harness engineering — agentic dev harnesses, skills, and running coding agents unattended.</p>
+      </header>
+
+      <AdSlot slot="1111111111" label="Header banner" />
+
+      <div class="layout-grid">
+        <main>
+          <slot />
+        </main>
+        <aside class="sidebar">
+          <AdSlot slot="2222222222" format="rectangle" label="Sidebar" />
+        </aside>
+      </div>
+
+      <footer class="site-footer">
+        <p>Written anonymously by a software engineer who spends too much time thinking about coding agents. No name, no employer, just the notes.</p>
+        <p><a href="/rss.xml">RSS feed</a></p>
+      </footer>
+    </div>
+  </body>
+</html>

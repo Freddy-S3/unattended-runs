@@ -1,0 +1,78 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AdSlot from "../components/AdSlot.astro";
+import NewsletterSignup from "../components/NewsletterSignup.astro";
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection("posts", ({ data }) => !data.draft);
+  return allPosts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post, allPosts },
+  }));
+}
+
+const { post, allPosts } = Astro.props;
+const { Content } = await post.render();
+
+// Naive tag-overlap "related posts": rank other published posts by number of
+// shared tags, drop zero-overlap posts, keep the top 3.
+const related = allPosts
+  .filter((p) => p.slug !== post.slug)
+  .map((p) => ({
+    post: p,
+    overlap: p.data.tags.filter((tag) => post.data.tags.includes(tag)).length,
+  }))
+  .filter((entry) => entry.overlap > 0)
+  .sort((a, b) => b.overlap - a.overlap)
+  .slice(0, 3)
+  .map((entry) => entry.post);
+---
+
+<BaseLayout
+  title={`${post.data.title} — Unattended Runs`}
+  description={post.data.description}
+  type="article"
+  pubDate={post.data.pubDate}
+>
+  <article class="post-body">
+    <h1>{post.data.title}</h1>
+    <div class="post-meta">
+      {post.data.pubDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+    </div>
+    <div>
+      {post.data.tags.map((tag) => (
+        <span class="tag">{tag}</span>
+      ))}
+    </div>
+
+    <!-- In-content ad, placed after the title/byline block and before the body
+         so it lands right after the intro rather than interrupting mid-argument. -->
+    <AdSlot slot="3333333333" label="In-content" />
+
+    <Content />
+
+    <AdSlot slot="4444444444" label="End of post" />
+
+    <NewsletterSignup />
+
+    {
+      related.length > 0 && (
+        <nav class="related-posts" aria-label="Related posts">
+          <h2>Related posts</h2>
+          <ul class="post-list">
+            {related.map((r) => (
+              <li>
+                <h3>
+                  <a href={`/${r.slug}/`}>{r.data.title}</a>
+                </h3>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+  </article>
+
+  <p><a href="/">&larr; Back to all posts</a></p>
+</BaseLayout>

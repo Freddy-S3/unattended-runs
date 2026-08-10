@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { PILLARS } from "../../config/pillars";
+import { SITE_NAME } from "../../config/site";
 
 export async function getStaticPaths() {
   const allPosts = await getCollection("posts", ({ data }) => !data.draft);
@@ -25,8 +26,8 @@ function formatDate(date: Date) {
 ---
 
 <BaseLayout
-  title={`${pillar?.label ?? tag} — Unattended Runs`}
-  description={pillar?.description ?? `Posts tagged "${tag}" on Unattended Runs.`}
+  title={`${pillar?.label ?? tag} — ${SITE_NAME}`}
+  description={pillar?.description ?? `Posts tagged "${tag}" on ${SITE_NAME}.`}
 >
   <p class="section-label">{pillar ? "Pillar" : "Tag"}</p>
   <h1>{pillar?.label ?? tag}</h1>

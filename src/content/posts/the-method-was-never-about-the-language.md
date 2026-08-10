@@ -1,0 +1,25 @@
+---
+title: "The method was never about the language"
+description: "I taught myself two languages before I taught myself to code. The thing that transferred wasn't vocabulary or syntax — it was a method for turning 'I don't know this' into a plan."
+pubDate: 2026-08-02
+tags: ["self-taught", "learning", "language-learning", "programming"]
+draft: false
+---
+
+Before I could write a program, I could hold a conversation in two languages I wasn't born into. Neither came from a classroom that mattered much — a few years of half-attended lessons, some travel, and then a long stretch of just deciding to get good on my own. Nobody was grading me. There was no curriculum waiting on the other side with a certificate. Just a fairly specific, fairly stubborn goal: be able to actually use this, not just recognize it on a test.
+
+I didn't think of that as a transferable skill at the time. It felt like a fact about languages — some people are "good at languages," and I'd apparently turned out to be one of them. It took years, and a second unrelated skill acquired the same way, to notice that the thing that had worked wasn't language-specific at all. It was a method. And the method is what showed up again, unchanged, when I sat down to teach myself to program with no CS background and no one checking my work.
+
+Here's the shape of it, stripped of subject matter.
+
+**Start using it before you're ready, and let the gaps tell you what to study next.** The instinct when you don't know something is to go get comprehensive first — finish the grammar reference, finish the textbook, then start speaking. That's backwards, and it's backwards in the same way for a language as it is for a programming language. What actually works is producing something real early, badly, and letting the specific way it breaks tell you exactly what you're missing. I wrote atrocious sentences on purpose, in conversation, with people who'd correct me, because the correction taught me the rule faster and more permanently than reading it would have. Later, I wrote atrocious code the same way — shipped something small, hit an error, learned exactly the concept the error was gesturing at, and kept the lesson because I'd earned it under real pressure instead of absorbing it as trivia. Comprehensive-first study teaches you facts. Production-first study teaches you facts you needed, at the moment you needed them, which is the only version that sticks.
+
+**Find a native speaker for the domain, and imitate before you understand.** In language learning this is obvious: you copy how a fluent speaker actually talks, not the stilted version in the workbook, well before you can explain why their sentence is constructed that way. I did the same thing with code — read other people's working programs, copied patterns I couldn't have derived myself, and let the explanation catch up later. This inverts the order most self-teaching resources assume, which is theory first, then application. Imitation first, theory later, is slower to feel rigorous and faster to produce someone who can actually do the thing.
+
+**Get comfortable being wrong in public, on purpose.** The single biggest lever in both cases was lowering my own bar for how much visible incompetence I'd tolerate before I'd try something. Most adults stop learning languages not because they lack aptitude but because they can't stand sounding like a child in front of people who know them as competent. The same instinct kills people's early programming progress — they won't post the question, won't show the broken code, won't admit they don't know what a pointer is, and so they stay stuck privately instead of getting unstuck publicly. I made a habit of asking the obvious question and shipping the ugly first draft, specifically because the embarrassment tax is a tax on speed, and I'd rather pay it early and often than let it compound into avoidance.
+
+**Set a using-it goal, not a knowing-it goal.** "Learn French" has no finish line and no forcing function. "Have a real, unassisted conversation with a stranger about something that matters to them" does — it's checkable, it's uncomfortable, and it fails loudly if you're not ready, which tells you something a quiz never could. "Learn to code" is the same kind of useless goal. "Ship something a stranger will actually use" is the one that works, because it forces you to close every gap that stands between you and a working thing, not just the gaps a syllabus happened to cover.
+
+None of this is exotic. If you've self-taught anything well, you've probably already reinvented some version of it. The reason I write it down is that I didn't recognize it as one method until the second time I used it, and by the third time — teaching myself the current wave of AI and agentic tooling, which is a separate post — it had stopped being a surprise and started being infrastructure: a thing I trust to work on the next unfamiliar domain, sight unseen, because it's worked on every domain I've pointed it at so far.
+
+The language and the language, so to speak, were never the point. The method was.

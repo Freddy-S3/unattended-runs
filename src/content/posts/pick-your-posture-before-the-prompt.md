@@ -2,7 +2,7 @@
 title: "Pick your posture before you pick your prompt"
 description: "Why an agentic harness needs an explicit operating mode — a fast autonomous posture and a slower high-ceremony one — instead of a single prompt trying to serve both."
 pubDate: 2026-08-06
-tags: ["operating-modes", "harness-design", "agentic-workflows"]
+tags: ["harness-engineering", "operating-modes", "harness-design", "agentic-workflows"]
 draft: false
 ---
 

@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import AdSlot from "../components/AdSlot.astro";
 import NewsletterSignup from "../components/NewsletterSignup.astro";
+import { SITE_NAME } from "../config/site";
 
 export async function getStaticPaths() {
   const allPosts = await getCollection("posts", ({ data }) => !data.draft);
@@ -30,7 +31,7 @@ const related = allPosts
 ---
 
 <BaseLayout
-  title={`${post.data.title} — Unattended Runs`}
+  title={`${post.data.title} — ${SITE_NAME}`}
   description={post.data.description}
   type="article"
   pubDate={post.data.pubDate}
@@ -42,7 +43,7 @@ const related = allPosts
     </div>
     <div class="tag-row">
       {post.data.tags.map((tag) => (
-        <span class="tag">{tag}</span>
+        <a class="tag" href={`/tags/${tag}/`}>{tag}</a>
       ))}
     </div>
 

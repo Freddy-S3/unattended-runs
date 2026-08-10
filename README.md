@@ -1,4 +1,6 @@
-# Unattended Runs
+# The Compounding Engineer
+
+Repo name (`unattended-runs`) is internal/technical and does not need to match the public site name — the published brand is "The Compounding Engineer", set via `SITE_NAME` in `src/config/site.ts`.
 
 ## About
 

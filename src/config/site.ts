@@ -4,9 +4,9 @@
 // update astro.config.mjs `site` to match (Astro uses that value to resolve
 // canonical/OG URLs and the sitemap during the build).
 export const SITE_URL = "https://example.com";
-export const SITE_NAME = "Unattended Runs";
+export const SITE_NAME = "The Compounding Engineer";
 export const SITE_DESCRIPTION =
-  "Notes on harness engineering: agentic dev harnesses, skills, and unattended coding workflows.";
+  "Notes on compounding leverage: agentic dev harnesses, unattended coding workflows, and the self-teaching that keeps up with them.";
 
 // Analytics configuration.
 //

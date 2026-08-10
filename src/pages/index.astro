@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { PILLARS } from "../config/pillars";
+import { SITE_NAME } from "../config/site";
 
 const allPosts = await getCollection("posts", ({ data }) => !data.draft);
 const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
@@ -22,8 +23,8 @@ function formatDate(date: Date) {
 }
 ---
 
-<BaseLayout title="Unattended Runs — notes on harness engineering">
-  <h1 class="visually-hidden">Unattended Runs — notes on harness engineering</h1>
+<BaseLayout title={`${SITE_NAME} — notes on compounding leverage`}>
+  <h1 class="visually-hidden">{SITE_NAME} — notes on compounding leverage</h1>
 
   {
     featured && (

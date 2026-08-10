@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { PILLARS } from "../config/pillars";
 
 const allPosts = await getCollection("posts", ({ data }) => !data.draft);
 const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
@@ -38,6 +39,18 @@ function formatDate(date: Date) {
     )
   }
 
+  <p class="section-label">Two threads</p>
+  <ul class="pillar-grid">
+    {PILLARS.map((pillar) => (
+      <li>
+        <a class="pillar-card" href={`/tags/${pillar.tag}/`}>
+          <h3>{pillar.label}</h3>
+          <p>{pillar.description}</p>
+        </a>
+      </li>
+    ))}
+  </ul>
+
   {
     rest.length > 0 && (
       <>
@@ -52,7 +65,7 @@ function formatDate(date: Date) {
               <p>{post.data.description || excerpt(post.body)}</p>
               <div class="tag-row">
                 {post.data.tags.map((tag) => (
-                  <span class="tag">{tag}</span>
+                  <a class="tag" href={`/tags/${tag}/`}>{tag}</a>
                 ))}
               </div>
             </li>

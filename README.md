@@ -2,10 +2,14 @@
 
 ## About
 
-This is a blog about harness engineering: designing agentic coding harnesses, writing reusable skills instead of one giant prompt, and running coding agents unattended without losing sleep over it, literally and figuratively.
+This blog has two pillars, defined in `src/config/pillars.ts`:
+
+- **Harness engineering** (tag `harness-engineering`) — designing agentic coding harnesses, writing reusable skills instead of one giant prompt, and running coding agents unattended without losing sleep over it, literally and figuratively.
+- **Self-directed learning** (tag `self-taught`) — how self-teaching actually works: picking up a language or a programming skill solo, and, as an ongoing application of the same method, staying current in a field (AI/agentic tooling) that reinvents itself every few months. Language learning and programming are the origin proof of the method; AI/harness engineering is where it gets used continuously, today.
+
 I write it anonymously.
-No name, no employer, just notes from actually building and running these systems.
-If you spend your days deciding how much autonomy to give a coding agent and how to recover when it does something you didn't expect, this is written for you.
+No name, no employer, just notes from actually building, learning, and running these things.
+If you spend your days deciding how much autonomy to give a coding agent, teaching yourself something with no one grading you, or both, this is written for you.
 
 ## Running locally
 
@@ -35,22 +39,32 @@ Each file needs frontmatter matching the schema in `src/content/config.ts`:
 | `title` | string | required |
 | `description` | string | required, used for the homepage excerpt and meta description |
 | `pubDate` | date | required, e.g. `2026-08-09` |
-| `tags` | string array | optional, defaults to `[]` |
+| `tags` | string array | optional, defaults to `[]`; see "Tags and pillars" below |
 | `draft` | boolean | optional, defaults to `false`; drafts are excluded from the homepage, the post pages, and `/api/posts.json` |
 
-To add a post by hand:
+### Tags and pillars
+
+Every tag automatically gets a page at `/tags/<tag>/` (`src/pages/tags/[tag].astro`) listing every published post carrying it — nothing to register manually, it's generated from whatever tags actually appear in `src/content/posts/`.
+
+The two pillar tags — `harness-engineering` and `self-taught` — are special only in that they're listed in `src/config/pillars.ts` with a label and description, which makes them show up in the "Two threads" section on the homepage and gives their tag page a title/description instead of just the raw tag string. Every post should carry the pillar tag for whichever thread it belongs to (`harness-engineering` or `self-taught`), plus whatever specific tags describe it (e.g. `harness-design`, `language-learning`, `ai-engineering`). A post can carry both pillar tags if it genuinely bridges both — for example a post about applying self-teaching method to harness design.
+
+To add a third pillar later: add an entry to the `PILLARS` array in `src/config/pillars.ts` and start tagging posts with its tag. No routing or homepage code needs to change.
+
+### Adding a post by hand
 
 1. Create `src/content/posts/<slug>.md`, where `<slug>` becomes the URL path.
-2. Add the frontmatter block above, then write the post body in markdown.
+2. Add the frontmatter block above, including the relevant pillar tag, then write the post body in markdown.
 3. Run `npm run build` to confirm it compiles and the schema validates.
 4. Commit on a branch and open a pull request.
 
-To add a post with an agent, a short recipe that works well:
+### Adding a post with an agent (prompt-to-article workflow)
 
-1. Give the harness a short prompt or story describing what the post should cover.
-2. Have it draft the post in the established anonymous, first-person, technical voice — no names, no employer, no references to a specific company's internals, general practice only.
-3. Have it fill in the frontmatter fields above, with `draft: false` once the post is ready to publish.
-4. Run `npm run build` to verify the content collection schema passes and the site still builds.
+This is the intended way to grow either pillar — hand the harness a short prompt, get a properly tagged, publish-ready post back. It works the same way for a harness-engineering post and a self-taught post; only the pillar tag and the voice's subject matter change.
+
+1. Give the harness a short prompt or story describing what the post should cover, and say which pillar it belongs to (`harness-engineering` or `self-taught`) — or let the harness infer it from the subject matter and confirm.
+2. Have it draft the post in the established anonymous, first-person, technical voice — no names, no employer, no references to a specific company's internals, general practice only. For `self-taught` posts specifically: frame concrete personal experience (language learning, learning to code, keeping up with AI/agentic tooling) as evidence for a transferable method, not as a one-off "here's what I learned" story — the throughline across the pillar is that self-teaching is an ongoing practice, and language/programming are the origin proof of a method that's now applied continuously to a fast-moving field.
+3. Have it fill in the frontmatter fields above — `title`, `description`, `pubDate`, `tags` (including the pillar tag), and `draft: false` once the post is ready to publish.
+4. Run `npm run build` to verify the content collection schema passes, the new tag page generates, and the site still builds.
 5. Commit the new file on a branch with a plain, descriptive commit message and open a pull request for review before merging.
 
 ## AdSense configuration

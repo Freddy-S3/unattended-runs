@@ -2,7 +2,7 @@
 title: "Composable skills beat one giant prompt"
 description: "Why small, reusable playbooks scale better than a single monolithic system prompt for an agentic coding harness."
 pubDate: 2026-07-28
-tags: ["harness-design", "skills", "agentic-workflows"]
+tags: ["harness-engineering", "harness-design", "skills", "agentic-workflows"]
 draft: false
 ---
 

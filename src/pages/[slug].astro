@@ -42,7 +42,7 @@ const related = allPosts
     </div>
     <div class="tag-row">
       {post.data.tags.map((tag) => (
-        <span class="tag">{tag}</span>
+        <a class="tag" href={`/tags/${tag}/`}>{tag}</a>
       ))}
     </div>
 

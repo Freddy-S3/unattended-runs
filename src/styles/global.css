@@ -381,6 +381,92 @@ code, pre, kbd {
   border: 1px solid var(--color-border-strong);
   border-radius: 999px;
   color: var(--color-muted);
+  text-decoration: none;
+}
+
+a.tag:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Homepage: pillar section                                               */
+/* ---------------------------------------------------------------------- */
+
+.pillar-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-8);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .pillar-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.pillar-card {
+  display: block;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.pillar-card:hover {
+  border-color: var(--color-accent);
+  background: var(--color-bg-raised);
+}
+
+.pillar-card h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-md);
+  color: var(--color-text);
+}
+
+.pillar-card p {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--color-text-dim);
+  line-height: 1.55;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Standalone post list (tag pages)                                       */
+/* ---------------------------------------------------------------------- */
+
+.post-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.post-list h3 {
+  margin: 0 0 var(--space-1);
+  font-size: var(--fs-md);
+}
+
+.post-list h3 a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.post-list h3 a:hover {
+  color: var(--color-accent);
+}
+
+.post-list p {
+  margin: var(--space-2) 0;
+  color: var(--color-text-dim);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
 }
 
 /* ---------------------------------------------------------------------- */

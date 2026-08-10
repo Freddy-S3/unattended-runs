@@ -2,7 +2,7 @@
 title: "Running agents unattended, overnight, and not regretting it"
 description: "Recoverability beats approval gates when nobody is watching the agent work — a practical set of rules for safe unattended runs."
 pubDate: 2026-08-02
-tags: ["unattended-agents", "git-workflow", "safety"]
+tags: ["harness-engineering", "unattended-agents", "git-workflow", "safety"]
 draft: false
 ---
 

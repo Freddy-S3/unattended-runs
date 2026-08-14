@@ -31,6 +31,27 @@ npm run build
 The static output is written to `dist/`.
 `npm run preview` serves that build locally if you want to check it before deploying.
 
+### The site domain
+
+Canonical links, OpenGraph urls, `sitemap.xml`, `rss.xml`, and `robots.txt` are all
+resolved from a single value, `SITE_URL` in `src/config/site.ts`, which `astro.config.mjs`
+imports as Astro's `site`. There is no second place to update.
+
+Set it as an environment variable at build time rather than committing the domain:
+
+```
+SITE_URL=https://your-domain.example npm run build
+```
+
+Every free-tier host has a field for this (Netlify, Vercel, and Cloudflare Pages all expose
+build-time environment variables).
+
+When `SITE_URL` is unset the build still succeeds, so local work is unaffected, but it
+falls back to a placeholder domain and prints a warning. In that state `robots.txt` is
+generated with `Disallow: /`, because a build whose canonical tags point at a domain that
+is not ours asks search engines not to index the real site — better to not be crawled at
+all than to be crawled with off-site canonicals.
+
 ## Publishing a new post
 
 Posts live as markdown files in `src/content/posts/`.

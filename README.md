@@ -49,8 +49,14 @@ build-time environment variables).
 When `SITE_URL` is unset the build still succeeds, so local work is unaffected, but it
 falls back to a placeholder domain and prints a warning. In that state `robots.txt` is
 generated with `Disallow: /`, because a build whose canonical tags point at a domain that
-is not ours asks search engines not to index the real site — better to not be crawled at
+is not ours asks search engines not to index the real site - better to not be crawled at
 all than to be crawled with off-site canonicals.
+
+Every page in that build also carries `<meta name="robots" content="noindex, nofollow">`.
+Both are needed rather than either: `Disallow` asks a crawler not to fetch the page, but a
+url that is linked from somewhere else can still be listed on the strength of that link
+alone, and `noindex` is the part that keeps it out of an index. Neither appears once
+`SITE_URL` is set to a real domain.
 
 ## Publishing a new post
 

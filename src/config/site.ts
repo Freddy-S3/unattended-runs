@@ -34,7 +34,7 @@ export const SITE_URL = resolveSiteUrl();
 
 /** True when the build is using the placeholder domain rather than a real one. */
 export const SITE_URL_IS_PLACEHOLDER = SITE_URL === PLACEHOLDER_SITE_URL;
-export const SITE_NAME = "The Compounding Engineer";
+export const SITE_NAME = "A Lazy Engineer";
 export const SITE_DESCRIPTION =
   "Notes on compounding leverage: agentic dev harnesses, unattended coding workflows, and the self-teaching that keeps up with them.";
 

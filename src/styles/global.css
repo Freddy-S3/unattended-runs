@@ -180,6 +180,10 @@ code, pre, kbd {
   gap: var(--space-7);
 }
 
+.layout-grid > * {
+  min-width: 0;
+}
+
 @media (min-width: 900px) {
   .layout-grid {
     grid-template-columns: minmax(0, 1fr) 260px;

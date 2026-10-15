@@ -1,6 +1,6 @@
-# The Compounding Engineer
+# A Lazy Engineer
 
-Repo name (`unattended-runs`) is internal/technical and does not need to match the public site name — the published brand is "The Compounding Engineer", set via `SITE_NAME` in `src/config/site.ts`.
+Repo name (`unattended-runs`) is internal/technical and does not need to match the public site name - the published brand is "A Lazy Engineer", set via `SITE_NAME` in `src/config/site.ts`.
 
 ## About
 
@@ -43,7 +43,7 @@ Set it as an environment variable at build time rather than committing the domai
 SITE_URL=https://your-domain.example npm run build
 ```
 
-Every free-tier host has a field for this (Netlify, Vercel, and Cloudflare Pages all expose
+Every free-tier host has a field for this (Amplify, Netlify, Vercel, and Cloudflare Pages all expose
 build-time environment variables).
 
 When `SITE_URL` is unset the build still succeeds, so local work is unaffected, but it

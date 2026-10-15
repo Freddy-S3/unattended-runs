@@ -1,6 +1,7 @@
 # build output
 dist/
 .astro/
+test-artifacts/
 
 # dependencies
 node_modules/

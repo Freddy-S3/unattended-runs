@@ -30,6 +30,7 @@ const {
 // comments into the shipped page, and this note is for whoever edits the file.
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const resolvedOgImage = ogImage ? new URL(ogImage, Astro.site).toString() : new URL("/og-default.svg", Astro.site).toString();
+const hasAdSense = /^ca-pub-\d+$/.test(ADSENSE_PUBLISHER_ID);
 ---
 
 <!doctype html>
@@ -61,10 +62,10 @@ const resolvedOgImage = ogImage ? new URL(ogImage, Astro.site).toString() : new 
 
     <!-- AdSense loader. Loaded async so it never blocks render. Publisher ID is a
          placeholder until src/config/ads.ts is updated with a real one. -->
-    <script
+    {hasAdSense && <script
       async
       src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}`}
-      crossorigin="anonymous"></script>
+      crossorigin="anonymous"></script>}
 
     <!-- Privacy-respecting analytics. No-op until ANALYTICS_SITE_ID is set in
          src/config/site.ts — nothing loads or sends data before then. -->
@@ -77,15 +78,23 @@ const resolvedOgImage = ogImage ? new URL(ogImage, Astro.site).toString() : new 
         <p>Notes on compounding leverage — agentic dev harnesses, skills, unattended coding agents, and the self-teaching that keeps up with them.</p>
       </header>
 
-      <AdSlot slot="1111111111" label="Header banner" />
+      <div class="header-banner">
+        <img
+          src="/header-banner.svg"
+          alt="Abstract cobalt, violet, and cyan light for A Lazy Engineer"
+          width="1600"
+          height="420"
+          fetchpriority="high"
+        />
+      </div>
 
-      <div class="layout-grid">
+      <div class:list={["layout-grid", { "layout-grid--with-sidebar": hasAdSense }]}>
         <main>
           <slot />
         </main>
-        <aside class="sidebar">
+        {hasAdSense && <aside class="sidebar">
           <AdSlot slot="2222222222" format="rectangle" label="Sidebar" />
-        </aside>
+        </aside>}
       </div>
 
       <footer class="site-footer">

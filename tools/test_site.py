@@ -30,6 +30,10 @@ def check_page(page: Page, url: str, screenshot: Path) -> None:
 
     assert "A Lazy Engineer" in page.title(), f"brand missing from title: {url}"
     assert "The Compounding Engineer" not in page.content(), f"old brand remains: {url}"
+    banner = page.locator(".header-banner")
+    assert banner.count() == 1, f"header banner missing: {url}"
+    assert banner.locator("img").get_attribute("src") == "/header-banner.svg", f"header banner asset missing: {url}"
+    assert page.locator(".adsbygoogle").count() == 0, f"placeholder ad slot rendered: {url}"
     assert page.locator('link[rel="canonical"]').get_attribute("href").startswith(
         "https://alazyengineer.com/"
     ), f"canonical does not use production domain: {url}"

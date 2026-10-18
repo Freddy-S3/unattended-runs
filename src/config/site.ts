@@ -4,36 +4,32 @@
 // this one value resolves every canonical link, OG url, sitemap entry, and RSS
 // link in the build - there is no second place to update.
 //
-// Set the SITE_URL environment variable at build time (every free-tier host
-// exposes one: Netlify, Vercel, Cloudflare Pages) rather than committing the
-// domain. The fallback below is a placeholder, not a real destination.
+// This was previously env-only, falling back to `https://example.com` with a
+// build warning. The warning did not work: the live site shipped that
+// placeholder into every canonical tag, every sitemap entry and every RSS
+// link, with `noindex` on each page and `Disallow: /` in robots.txt, because
+// the host's environment variable was never set and the build succeeded
+// anyway. A default that makes an unset variable catastrophic is the wrong
+// default for a domain that is already registered and serving.
 //
-// This matters more than a normal placeholder: shipping a build with it means
-// every page carries a canonical tag pointing at a domain that is not ours,
-// which asks search engines not to index the site at all. The build warns
-// loudly rather than failing, so a local `npm run build` still works.
-const PLACEHOLDER_SITE_URL = "https://example.com";
+// So the real domain is committed, and SITE_URL still overrides it - that is
+// what a preview or staging build sets. Being wrong now means pointing at the
+// wrong real site, which is visible, rather than silently de-indexing this one.
+//
+// Bare apex rather than www: both hostnames serve this Amplify app, neither
+// redirects to the other, and the canonical has to pick one or the two are
+// duplicates of each other. The apex is the shorter brand form and is what the
+// render test already asserts. Pointing www at a 301 to the apex is a console
+// change on the Amplify domain settings, not something this file can do.
+const PRODUCTION_SITE_URL = "https://alazyengineer.com";
 
 function resolveSiteUrl(): string {
   const fromEnv = process.env.SITE_URL?.trim();
   if (fromEnv) return fromEnv.replace(/\/+$/, "");
-
-  console.warn(
-    [
-      "",
-      "  SITE_URL is not set, falling back to " + PLACEHOLDER_SITE_URL + ".",
-      "  Canonical links, OG urls, rss.xml, and sitemap.xml in this build all",
-      "  point at that placeholder domain. Fine locally; do not deploy it.",
-      "",
-    ].join("\n"),
-  );
-  return PLACEHOLDER_SITE_URL;
+  return PRODUCTION_SITE_URL;
 }
 
 export const SITE_URL = resolveSiteUrl();
-
-/** True when the build is using the placeholder domain rather than a real one. */
-export const SITE_URL_IS_PLACEHOLDER = SITE_URL === PLACEHOLDER_SITE_URL;
 export const SITE_NAME = "A Lazy Engineer";
 export const SITE_DESCRIPTION =
   "Notes on compounding leverage: agentic dev harnesses, unattended coding workflows, and the self-teaching that keeps up with them.";

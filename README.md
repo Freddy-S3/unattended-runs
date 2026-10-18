@@ -43,37 +43,43 @@ The static output is written to `dist/`.
 
 ### The site domain
 
+The site is live at **https://alazyengineer.com**.
+
 Canonical links, OpenGraph urls, `sitemap.xml`, `rss.xml`, and `robots.txt` are all
 resolved from a single value, `SITE_URL` in `src/config/site.ts`, which `astro.config.mjs`
-imports as Astro's `site`. There is no second place to update.
+imports as Astro's `site`. There is no second place to update - including `amplify.yml`,
+which deliberately does not set it.
 
-Set it as an environment variable at build time rather than committing the domain:
+The domain is committed as the default. The `SITE_URL` environment variable still overrides
+it, which is what a staging or preview build sets:
 
 ```
-SITE_URL=https://your-domain.example npm run build
+SITE_URL=https://staging.example npm run build
 ```
 
-For the Amplify deployment this is set in `amplify.yml` rather than only in the console. The console
-field was never set, and the result was invisible in a diff: builds succeeded, fell back to the
-placeholder, and published the live site with off-site canonicals, `noindex` on every page, and
-`Disallow: /` in robots.txt. Keeping the value in the build spec makes the deployed configuration
-reviewable. A console environment variable of the same name still overrides it, so a preview branch
-can point elsewhere.
+It was previously the other way around - env-only, falling back to `https://example.com`
+with a build warning. That default was wrong for a domain that is already registered and
+serving. The host's variable was never set, the build succeeded anyway, and the live site
+served every canonical tag, every sitemap entry and every RSS link pointing at
+`example.com`, with `noindex` on each page and `Disallow: /` in robots.txt. A warning in
+build logs nobody reads did not prevent any of it. Getting the committed default wrong now
+means pointing at the wrong real site, which is visible on the page; getting the old one
+wrong meant silently de-indexing this one.
 
-Every other free-tier host has a field for this too (Netlify, Vercel, and Cloudflare Pages all
-expose build-time environment variables).
+Because there is no unset case left, `robots.txt` always emits a crawlable policy and no
+page carries `noindex`. A staging build that genuinely should not be indexed sets its own
+`SITE_URL` and is blocked at the host.
 
-When `SITE_URL` is unset the build still succeeds, so local work is unaffected, but it
-falls back to a placeholder domain and prints a warning. In that state `robots.txt` is
-generated with `Disallow: /`, because a build whose canonical tags point at a domain that
-is not ours asks search engines not to index the real site - better to not be crawled at
-all than to be crawled with off-site canonicals.
+#### Apex rather than www
 
-Every page in that build also carries `<meta name="robots" content="noindex, nofollow">`.
-Both are needed rather than either: `Disallow` asks a crawler not to fetch the page, but a
-url that is linked from somewhere else can still be listed on the strength of that link
-alone, and `noindex` is the part that keeps it out of an index. Neither appears once
-`SITE_URL` is set to a real domain.
+`https://alazyengineer.com` and `https://www.alazyengineer.com` both serve this Amplify app
+and **neither redirects to the other** - verified by request, identical ETag on both. The
+canonical has to name one of them or search engines see two copies of every page.
+
+The apex is the one chosen: shorter, it is the brand form, and `tools/test_site.py` already
+asserts it. That makes the canonical tag the thing consolidating the two hostnames, which
+works but is not the whole fix. Pointing `www` at a 301 to the apex is a change in the
+Amplify domain settings and cannot be made from this repository.
 
 ## Publishing a new post
 

@@ -1,17 +1,4 @@
 version: 1
-# SITE_URL is set here rather than only in the Amplify console because the
-# console value was never set, and the consequence is silent: the build still
-# succeeds, falls back to the placeholder domain, and publishes every page with
-# an off-site canonical plus `noindex`, and robots.txt with `Disallow: /`. The
-# live site served exactly that state. Keeping the domain in the build spec
-# makes the deployed configuration reviewable in the repository instead of
-# depending on a console field nobody can see in a diff.
-#
-# A console environment variable of the same name still overrides this, so a
-# preview branch can point somewhere else without editing the file.
-env:
-  variables:
-    SITE_URL: https://alazyengineer.com
 frontend:
   phases:
     preBuild:

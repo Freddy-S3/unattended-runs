@@ -12,7 +12,20 @@ from playwright.sync_api import Page, sync_playwright
 VIEWPORTS = {
     "desktop": (1440, 900),
     "tablet": (900, 1000),
-    "mobile": (390, 844),
+    "mobile": (375, 812),
+}
+
+# Every top-level route, plus one representative post and one pillar tag page.
+# Keyed by the screenshot name so a failure says which page broke.
+PAGES = {
+    "home": "/",
+    "blog": "/blog/",
+    "services": "/services/",
+    "services-training": "/services/training/",
+    "services-automation": "/services/automation/",
+    "waitlist": "/waitlist/",
+    "post": "/blog/pick-your-posture-before-the-prompt/",
+    "tag": "/blog/tags/self-taught/",
 }
 
 
@@ -34,6 +47,32 @@ def check_page(page: Page, url: str, screenshot: Path) -> None:
     assert banner.count() == 1, f"header banner missing: {url}"
     assert banner.locator("img").get_attribute("src") == "/header-banner.svg", f"header banner asset missing: {url}"
     assert page.locator(".adsbygoogle").count() == 0, f"placeholder ad slot rendered: {url}"
+
+    # Both top-level sections must be reachable from every page.
+    nav = page.locator(".site-nav")
+    assert nav.count() == 1, f"section nav missing: {url}"
+    nav_targets = nav.locator("a").evaluate_all("els => els.map(a => a.getAttribute('href'))")
+    for required in ("/blog/", "/services/", "/waitlist/"):
+        assert required in nav_targets, f"nav missing {required}: {url}"
+
+    # No control may look live and do nothing.
+    #
+    # The newsletter signup is excluded deliberately. It renders disabled
+    # inputs alongside copy that says it is not connected to a provider, which
+    # is a pre-existing and defensible choice: nothing about it reads as
+    # submittable. The waitlist took the stricter route instead - no inputs at
+    # all until a destination is configured - because an enquiry form that
+    # looks usable to a prospective client is a worse failure than a visibly
+    # inert newsletter box.
+    live_controls = page.locator(
+        "form:not(.newsletter-signup form), "
+        ".waitlist-form button, .waitlist-form input, .waitlist-form select, .waitlist-form textarea"
+    )
+    for control in live_controls.element_handles():
+        disabled = control.get_property("disabled").json_value()
+        assert not disabled, f"disabled control outside the newsletter on {url}"
+    for form in page.locator("form:not(.newsletter-signup form)").element_handles():
+        assert form.get_attribute("action"), f"form with no action on {url}"
     assert page.locator('link[rel="canonical"]').get_attribute("href").startswith(
         "https://alazyengineer.com/"
     ), f"canonical does not use production domain: {url}"
@@ -71,7 +110,12 @@ def main() -> None:
         browser = playwright.chromium.launch()
         for name, (width, height) in VIEWPORTS.items():
             page = browser.new_page(viewport={"width": width, "height": height})
-            check_page(page, f"{args.base_url}/", args.screenshots / f"home-{name}.png")
+            for label, path in PAGES.items():
+                check_page(
+                    page,
+                    f"{args.base_url}{path}",
+                    args.screenshots / f"{label}-{name}.png",
+                )
             page.close()
         browser.close()
 

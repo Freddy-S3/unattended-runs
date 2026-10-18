@@ -1,77 +1,84 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { PILLARS } from "../config/pillars";
+import { SERVICE_BRANCHES } from "../config/services";
 import { SITE_NAME } from "../config/site";
 
-const allPosts = await getCollection("posts", ({ data }) => !data.draft);
-const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
-const [featured, ...rest] = posts;
-
-function excerpt(body: string, length = 220) {
-  const plain = body
-    .replace(/^---[\s\S]*?---/, "")
-    .replace(/[#*`>_[\]()]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-  return plain.length > length ? `${plain.slice(0, length).trim()}…` : plain;
-}
+// The homepage is the fork between the two top-level sections rather than the
+// blog itself - the blog lives at /blog/. It still surfaces the newest post,
+// because an empty-looking landing page gives a first-time visitor no reason
+// to pick either direction.
+const posts = (await getCollection("posts", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const latest = posts[0];
 
 function formatDate(date: Date) {
   return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 }
 ---
 
-<BaseLayout title={`${SITE_NAME} — notes on compounding leverage`}>
-  <h1 class="visually-hidden">{SITE_NAME} — notes on compounding leverage</h1>
+<BaseLayout title={`${SITE_NAME} — notes on compounding leverage`} section="home">
+  <section class="landing-hero">
+    <h1>Notes on compounding leverage, and the work behind them.</h1>
+    <p>
+      Agentic development harnesses, unattended coding runs, and the self-teaching that keeps up
+      with a field reinventing its tooling every few months. Written up in the blog, and offered
+      as work in the services below.
+    </p>
+  </section>
 
-  {
-    featured && (
-      <section class="hero">
-        <p class="hero-kicker">Latest run</p>
-        <h2>
-          <a href={`/${featured.slug}/`}>{featured.data.title}</a>
-        </h2>
-        <div class="post-meta">{formatDate(featured.data.pubDate)}</div>
-        <p class="hero-excerpt">{featured.data.description || excerpt(featured.body, 260)}</p>
-        <a class="read-more" href={`/${featured.slug}/`}>Read the post &rarr;</a>
-      </section>
-    )
-  }
+  <p class="section-label">Two sections</p>
+  <ul class="section-grid">
+    <li>
+      <a class="section-card" href="/blog/">
+        <span class="section-card__kicker">Blog</span>
+        <h2>Posts on harnesses and self-teaching</h2>
+        <p>
+          Two pillars: designing agentic coding harnesses, and the method for learning a skill
+          solo and staying current afterwards. {posts.length} posts so far.
+        </p>
+        <span class="section-card__more">Read the blog &rarr;</span>
+      </a>
+    </li>
+    <li>
+      <a class="section-card" href="/services/">
+        <span class="section-card__kicker">Services</span>
+        <h2>Training and automation engagements</h2>
+        <p>
+          Teaching people how to teach themselves, and building the agent harness that automates
+          a team's workflow or a single engineer's.
+        </p>
+        <span class="section-card__more">See the services &rarr;</span>
+      </a>
+    </li>
+  </ul>
 
-  <p class="section-label">Two threads</p>
+  <p class="section-label">What the services cover</p>
   <ul class="pillar-grid">
-    {PILLARS.map((pillar) => (
+    {SERVICE_BRANCHES.map((branch) => (
       <li>
-        <a class="pillar-card" href={`/tags/${pillar.tag}/`}>
-          <h3>{pillar.label}</h3>
-          <p>{pillar.description}</p>
+        <a class="pillar-card" href={`/services/${branch.slug}/`}>
+          <h3>{branch.label}</h3>
+          <p>{branch.tagline}</p>
         </a>
       </li>
     ))}
   </ul>
 
   {
-    rest.length > 0 && (
+    latest && (
       <>
-        <p class="section-label">Earlier runs</p>
-        <ul class="post-grid">
-          {rest.map((post) => (
-            <li class="post-card">
-              <h3>
-                <a href={`/${post.slug}/`}>{post.data.title}</a>
-              </h3>
-              <div class="post-meta">{formatDate(post.data.pubDate)}</div>
-              <p>{post.data.description || excerpt(post.body)}</p>
-              <div class="tag-row">
-                {post.data.tags.map((tag) => (
-                  <a class="tag" href={`/tags/${tag}/`}>{tag}</a>
-                ))}
-              </div>
-            </li>
-          ))}
-        </ul>
+        <p class="section-label">Latest post</p>
+        <section class="hero">
+          <p class="hero-kicker">Latest run</p>
+          <h2>
+            <a href={`/blog/${latest.slug}/`}>{latest.data.title}</a>
+          </h2>
+          <div class="post-meta">{formatDate(latest.data.pubDate)}</div>
+          <p class="hero-excerpt">{latest.data.description}</p>
+          <a class="read-more" href={`/blog/${latest.slug}/`}>Read the post &rarr;</a>
+        </section>
       </>
     )
   }

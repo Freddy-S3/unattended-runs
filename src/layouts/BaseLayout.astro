@@ -10,6 +10,8 @@ interface Props {
   type?: "website" | "article";
   pubDate?: Date;
   ogImage?: string;
+  /** Which top-level section this page belongs to, for nav highlighting. */
+  section?: "home" | "blog" | "services" | "waitlist";
 }
 
 const {
@@ -18,6 +20,7 @@ const {
   type = "website",
   pubDate,
   ogImage,
+  section = "home",
 } = Astro.props;
 
 // When SITE_URL is unset the canonical below points at a placeholder domain, so
@@ -74,8 +77,15 @@ const hasAdSense = /^ca-pub-\d+$/.test(ADSENSE_PUBLISHER_ID);
   <body>
     <div class="site">
       <header class="site-header">
-        <a class="site-title" href="/">{SITE_NAME}</a>
-        <p>Notes on compounding leverage — agentic dev harnesses, skills, unattended coding agents, and the self-teaching that keeps up with them.</p>
+        <div class="site-header__brand">
+          <a class="site-title" href="/">{SITE_NAME}</a>
+          <nav class="site-nav" aria-label="Sections">
+            <a href="/blog/" aria-current={section === "blog" ? "page" : undefined}>Blog</a>
+            <a href="/services/" aria-current={section === "services" ? "page" : undefined}>Services</a>
+            <a class="site-nav__cta" href="/waitlist/" aria-current={section === "waitlist" ? "page" : undefined}>Waitlist</a>
+          </nav>
+        </div>
+        <p>Notes on compounding leverage - agentic dev harnesses, skills, unattended coding agents, and the self-teaching that keeps up with them.</p>
       </header>
 
       <div class="header-banner">
@@ -99,7 +109,12 @@ const hasAdSense = /^ca-pub-\d+$/.test(ADSENSE_PUBLISHER_ID);
 
       <footer class="site-footer">
         <p>Written anonymously by a software engineer who spends too much time thinking about coding agents. No name, no employer, just the notes.</p>
-        <p><a href="/rss.xml">RSS feed</a></p>
+        <p class="site-footer__links">
+          <a href="/blog/">Blog</a>
+          <a href="/services/">Services</a>
+          <a href="/waitlist/">Waitlist</a>
+          <a href="/rss.xml">RSS feed</a>
+        </p>
       </footer>
     </div>
   </body>

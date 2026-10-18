@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { SERVICE_BRANCHES } from "../../config/services";
+import { SITE_NAME } from "../../config/site";
+---
+
+<BaseLayout
+  title={`Services — ${SITE_NAME}`}
+  description="Training in self-directed learning, and agentic harness automation for a team or a single engineer."
+  section="services"
+>
+  <p class="section-label">Services</p>
+  <h1 class="page-title">Two kinds of leverage, offered as work.</h1>
+  <p class="lede">
+    The blog covers how this is built. These are the same two threads as engagements: the method
+    for teaching yourself a skill, and the harness that makes a coding agent worth handing work to.
+  </p>
+
+  <ul class="service-grid">
+    {SERVICE_BRANCHES.map((branch) => (
+      <li class="service-card">
+        <p class="service-card__kicker">{branch.label}</p>
+        <h2>{branch.tagline}</h2>
+        <p>{branch.description}</p>
+        <ul class="service-card__list">
+          {branch.offerings.map((offering) => (
+            <li>{offering.title}</li>
+          ))}
+        </ul>
+        <a class="read-more" href={`/services/${branch.slug}/`}>
+          {branch.label} details &rarr;
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <section class="cta-panel">
+    <h2>Enquiring about an engagement</h2>
+    <p>
+      This runs alongside a full-time job, so I keep a hard cap of two concurrent engagements and
+      review new enquiries in batches rather than as they arrive. The waitlist is how that queue
+      works.
+    </p>
+    <a class="cta-panel__action" href="/waitlist/">Join the waitlist &rarr;</a>
+  </section>
+</BaseLayout>

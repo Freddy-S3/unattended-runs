@@ -1,9 +1,9 @@
 ---
 import { getCollection } from "astro:content";
-import BaseLayout from "../layouts/BaseLayout.astro";
-import AdSlot from "../components/AdSlot.astro";
-import NewsletterSignup from "../components/NewsletterSignup.astro";
-import { SITE_NAME } from "../config/site";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AdSlot from "../../components/AdSlot.astro";
+import NewsletterSignup from "../../components/NewsletterSignup.astro";
+import { SITE_NAME } from "../../config/site";
 
 export async function getStaticPaths() {
   const allPosts = await getCollection("posts", ({ data }) => !data.draft);
@@ -35,6 +35,7 @@ const related = allPosts
   description={post.data.description}
   type="article"
   pubDate={post.data.pubDate}
+  section="blog"
 >
   <article class="post-body">
     <h1>{post.data.title}</h1>
@@ -43,7 +44,7 @@ const related = allPosts
     </div>
     <div class="tag-row">
       {post.data.tags.map((tag) => (
-        <a class="tag" href={`/tags/${tag}/`}>{tag}</a>
+        <a class="tag" href={`/blog/tags/${tag}/`}>{tag}</a>
       ))}
     </div>
 
@@ -65,7 +66,7 @@ const related = allPosts
             {related.map((r) => (
               <li>
                 <h3>
-                  <a href={`/${r.slug}/`}>{r.data.title}</a>
+                  <a href={`/blog/${r.slug}/`}>{r.data.title}</a>
                 </h3>
               </li>
             ))}
@@ -75,5 +76,5 @@ const related = allPosts
     }
   </article>
 
-  <p><a class="back-link" href="/">&larr; Back to all posts</a></p>
+  <p><a class="back-link" href="/blog/">&larr; Back to all posts</a></p>
 </BaseLayout>

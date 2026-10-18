@@ -16,12 +16,22 @@
 // what a preview or staging build sets. Being wrong now means pointing at the
 // wrong real site, which is visible, rather than silently de-indexing this one.
 //
-// Bare apex rather than www: both hostnames serve this Amplify app, neither
-// redirects to the other, and the canonical has to pick one or the two are
-// duplicates of each other. The apex is the shorter brand form and is what the
-// render test already asserts. Pointing www at a 301 to the apex is a console
-// change on the Amplify domain settings, not something this file can do.
-const PRODUCTION_SITE_URL = "https://alazyengineer.com";
+// www, not the bare apex, because that is the direction the Amplify domain
+// settings redirect: "Setup redirect from https://alazyengineer.com to
+// https://www.alazyengineer.com" is enabled on this app. The canonical has to
+// name the destination of that redirect, not its source. Storing the apex
+// would put a redirect in front of every canonical link, OG url, sitemap entry
+// and RSS link in the build - a hop on every crawl and every shared link.
+//
+// Requesting either hostname today still returns 200 with no redirect, so this
+// does not match observed behaviour yet. That observation is not trustworthy
+// here: both are served from CloudFront with `s-maxage=31536000`, a year, and
+// the edge returns a cached hit even for a never-before-seen query string, so
+// there is no way to see the origin's current behaviour from outside. The
+// console setting is the configured intent and is what will hold once the
+// cache turns over; matching it is the safe direction to be wrong in, because
+// a canonical on the redirect's destination stays correct either way.
+const PRODUCTION_SITE_URL = "https://www.alazyengineer.com";
 
 function resolveSiteUrl(): string {
   const fromEnv = process.env.SITE_URL?.trim();

@@ -43,7 +43,7 @@ The static output is written to `dist/`.
 
 ### The site domain
 
-The site is live at **https://alazyengineer.com**.
+The site is live at **https://www.alazyengineer.com**.
 
 Canonical links, OpenGraph urls, `sitemap.xml`, `rss.xml`, and `robots.txt` are all
 resolved from a single value, `SITE_URL` in `src/config/site.ts`, which `astro.config.mjs`
@@ -70,16 +70,15 @@ Because there is no unset case left, `robots.txt` always emits a crawlable polic
 page carries `noindex`. A staging build that genuinely should not be indexed sets its own
 `SITE_URL` and is blocked at the host.
 
-#### Apex rather than www
+#### www rather than the bare apex
 
-`https://alazyengineer.com` and `https://www.alazyengineer.com` both serve this Amplify app
-and **neither redirects to the other** - verified by request, identical ETag on both. The
-canonical has to name one of them or search engines see two copies of every page.
+The Amplify domain settings for this app have **"Setup redirect from https://alazyengineer.com to https://www.alazyengineer.com"** enabled, so `www` is the destination and the apex is the source. `SITE_URL` names the destination.
 
-The apex is the one chosen: shorter, it is the brand form, and `tools/test_site.py` already
-asserts it. That makes the canonical tag the thing consolidating the two hostnames, which
-works but is not the whole fix. Pointing `www` at a 301 to the apex is a change in the
-Amplify domain settings and cannot be made from this repository.
+This matters more than it looks. `SITE_URL` resolves every canonical link, OpenGraph url, sitemap entry and RSS link in the build. Pointing it at the apex would put a redirect hop in front of every one of them - every crawl, every shared link, every feed reader.
+
+Requesting either hostname currently returns `200` with no redirect, so this does not match observed behaviour yet. That observation is not worth much: both are served from CloudFront with `s-maxage=31536000` - a year - and the edge returns a cached hit even for a query string it has never seen, so the origin's current behaviour is not visible from outside. The console setting is the configured intent, and a canonical sitting on the redirect's destination is correct whether or not the redirect is live.
+
+`tools/test_site.py` asserts the exact `www` host rather than just the registered domain, so changing it back to the apex fails the render test rather than silently shipping.
 
 ## Publishing a new post
 

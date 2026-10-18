@@ -73,9 +73,14 @@ def check_page(page: Page, url: str, screenshot: Path) -> None:
         assert not disabled, f"disabled control outside the newsletter on {url}"
     for form in page.locator("form:not(.newsletter-signup form)").element_handles():
         assert form.get_attribute("action"), f"form with no action on {url}"
-    assert page.locator('link[rel="canonical"]').get_attribute("href").startswith(
-        "https://alazyengineer.com/"
-    ), f"canonical does not use production domain: {url}"
+    # The www host specifically, not just the registered domain. The Amplify
+    # domain settings redirect the bare apex to www, so a canonical on the apex
+    # would point every crawler and every shared link at a redirect. Asserting
+    # the exact host is what catches that being changed back by accident.
+    canonical = page.locator('link[rel="canonical"]').get_attribute("href")
+    assert canonical.startswith(
+        "https://www.alazyengineer.com/"
+    ), f"canonical is not on the www production host: {url} ({canonical})"
     assert page.locator("img").evaluate_all(
         "els => els.every(img => img.complete && img.naturalWidth > 0)"
     ), f"an image did not decode: {url}"

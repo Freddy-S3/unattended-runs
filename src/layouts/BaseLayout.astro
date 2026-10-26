@@ -1,6 +1,6 @@
 ---
 import { ADSENSE_PUBLISHER_ID } from "../config/ads";
-import { SITE_NAME, SITE_DESCRIPTION, ANALYTICS_SITE_ID, ANALYTICS_SCRIPT_SRC, SITE_URL_IS_PLACEHOLDER } from "../config/site";
+import { SITE_NAME, SITE_DESCRIPTION, ANALYTICS_SITE_ID, ANALYTICS_SCRIPT_SRC } from "../config/site";
 import AdSlot from "../components/AdSlot.astro";
 import "../styles/global.css";
 
@@ -10,6 +10,8 @@ interface Props {
   type?: "website" | "article";
   pubDate?: Date;
   ogImage?: string;
+  /** Which top-level section this page belongs to, for nav highlighting. */
+  section?: "home" | "blog" | "services" | "waitlist";
 }
 
 const {
@@ -18,18 +20,20 @@ const {
   type = "website",
   pubDate,
   ogImage,
+  section = "home",
 } = Astro.props;
 
-// When SITE_URL is unset the canonical below points at a placeholder domain, so
-// the page emits `noindex`. robots.txt already disallows crawling, but that only
-// asks a crawler not to fetch the page - a url linked from somewhere else can
-// still be listed on the strength of that link alone. noindex is the part that
-// keeps it out of an index, so the build needs both rather than either.
+// The conditional `noindex` that used to sit below is gone with the placeholder
+// domain that triggered it: SITE_URL now defaults to the real domain, so there
+// is no build that silently carries off-site canonicals and needs suppressing.
+// A staging build that should not be indexed sets SITE_URL to its own hostname
+// and is blocked at the host, not from here.
 //
 // Kept as a frontmatter comment deliberately: Astro renders template-level HTML
 // comments into the shipped page, and this note is for whoever edits the file.
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const resolvedOgImage = ogImage ? new URL(ogImage, Astro.site).toString() : new URL("/og-default.svg", Astro.site).toString();
+const hasAdSense = /^ca-pub-\d+$/.test(ADSENSE_PUBLISHER_ID);
 ---
 
 <!doctype html>
@@ -40,7 +44,6 @@ const resolvedOgImage = ogImage ? new URL(ogImage, Astro.site).toString() : new 
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
-    {SITE_URL_IS_PLACEHOLDER && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><text y=%2213%22 font-size=%2213%22>%E2%9A%99%EF%B8%8F</text></svg>" />
     <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href={new URL("rss.xml", Astro.site)} />
 
@@ -61,10 +64,10 @@ const resolvedOgImage = ogImage ? new URL(ogImage, Astro.site).toString() : new 
 
     <!-- AdSense loader. Loaded async so it never blocks render. Publisher ID is a
          placeholder until src/config/ads.ts is updated with a real one. -->
-    <script
+    {hasAdSense && <script
       async
       src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}`}
-      crossorigin="anonymous"></script>
+      crossorigin="anonymous"></script>}
 
     <!-- Privacy-respecting analytics. No-op until ANALYTICS_SITE_ID is set in
          src/config/site.ts — nothing loads or sends data before then. -->
@@ -73,24 +76,44 @@ const resolvedOgImage = ogImage ? new URL(ogImage, Astro.site).toString() : new 
   <body>
     <div class="site">
       <header class="site-header">
-        <a class="site-title" href="/">{SITE_NAME}</a>
-        <p>Notes on compounding leverage — agentic dev harnesses, skills, unattended coding agents, and the self-teaching that keeps up with them.</p>
+        <div class="site-header__brand">
+          <a class="site-title" href="/">{SITE_NAME}</a>
+          <nav class="site-nav" aria-label="Sections">
+            <a href="/blog/" aria-current={section === "blog" ? "page" : undefined}>Blog</a>
+            <a href="/services/" aria-current={section === "services" ? "page" : undefined}>Services</a>
+            <a class="site-nav__cta" href="/waitlist/" aria-current={section === "waitlist" ? "page" : undefined}>Waitlist</a>
+          </nav>
+        </div>
+        <p>Notes on compounding leverage - agentic dev harnesses, skills, unattended coding agents, and the self-teaching that keeps up with them.</p>
       </header>
 
-      <AdSlot slot="1111111111" label="Header banner" />
+      <div class="header-banner">
+        <img
+          src="/header-banner.svg"
+          alt="Abstract cobalt, violet, and cyan light for A Lazy Engineer"
+          width="1600"
+          height="420"
+          fetchpriority="high"
+        />
+      </div>
 
-      <div class="layout-grid">
+      <div class:list={["layout-grid", { "layout-grid--with-sidebar": hasAdSense }]}>
         <main>
           <slot />
         </main>
-        <aside class="sidebar">
+        {hasAdSense && <aside class="sidebar">
           <AdSlot slot="2222222222" format="rectangle" label="Sidebar" />
-        </aside>
+        </aside>}
       </div>
 
       <footer class="site-footer">
         <p>Written anonymously by a software engineer who spends too much time thinking about coding agents. No name, no employer, just the notes.</p>
-        <p><a href="/rss.xml">RSS feed</a></p>
+        <p class="site-footer__links">
+          <a href="/blog/">Blog</a>
+          <a href="/services/">Services</a>
+          <a href="/waitlist/">Waitlist</a>
+          <a href="/rss.xml">RSS feed</a>
+        </p>
       </footer>
     </div>
   </body>

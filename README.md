@@ -2,6 +2,16 @@
 
 Repo name (`unattended-runs`) is internal/technical and does not need to match the public site name - the published brand is "A Lazy Engineer", set via `SITE_NAME` in `src/config/site.ts`.
 
+## Structure
+
+The site has two top-level sections, plus the waitlist that feeds the second one:
+
+- **`/blog/`** - the writing. The pillars, tag pages, and every post live under here (`/blog/<slug>/`, `/blog/tags/<tag>/`).
+- **`/services/`** - the work, offered as engagements. Two branches, generated from `src/config/services.ts`: `/services/training/` and `/services/automation/`.
+- **`/waitlist/`** - where client enquiries arrive. See "The waitlist" below; it does not accept enquiries until a destination is configured.
+
+`/` is the fork between the two sections rather than the blog itself.
+
 ## About
 
 This blog has two pillars, defined in `src/config/pillars.ts`:
@@ -33,30 +43,42 @@ The static output is written to `dist/`.
 
 ### The site domain
 
+The site is live at **https://www.alazyengineer.com**.
+
 Canonical links, OpenGraph urls, `sitemap.xml`, `rss.xml`, and `robots.txt` are all
 resolved from a single value, `SITE_URL` in `src/config/site.ts`, which `astro.config.mjs`
-imports as Astro's `site`. There is no second place to update.
+imports as Astro's `site`. There is no second place to update - including `amplify.yml`,
+which deliberately does not set it.
 
-Set it as an environment variable at build time rather than committing the domain:
+The domain is committed as the default. The `SITE_URL` environment variable still overrides
+it, which is what a staging or preview build sets:
 
 ```
-SITE_URL=https://your-domain.example npm run build
+SITE_URL=https://staging.example npm run build
 ```
 
-Every free-tier host has a field for this (Amplify, Netlify, Vercel, and Cloudflare Pages all expose
-build-time environment variables).
+It was previously the other way around - env-only, falling back to `https://example.com`
+with a build warning. That default was wrong for a domain that is already registered and
+serving. The host's variable was never set, the build succeeded anyway, and the live site
+served every canonical tag, every sitemap entry and every RSS link pointing at
+`example.com`, with `noindex` on each page and `Disallow: /` in robots.txt. A warning in
+build logs nobody reads did not prevent any of it. Getting the committed default wrong now
+means pointing at the wrong real site, which is visible on the page; getting the old one
+wrong meant silently de-indexing this one.
 
-When `SITE_URL` is unset the build still succeeds, so local work is unaffected, but it
-falls back to a placeholder domain and prints a warning. In that state `robots.txt` is
-generated with `Disallow: /`, because a build whose canonical tags point at a domain that
-is not ours asks search engines not to index the real site - better to not be crawled at
-all than to be crawled with off-site canonicals.
+Because there is no unset case left, `robots.txt` always emits a crawlable policy and no
+page carries `noindex`. A staging build that genuinely should not be indexed sets its own
+`SITE_URL` and is blocked at the host.
 
-Every page in that build also carries `<meta name="robots" content="noindex, nofollow">`.
-Both are needed rather than either: `Disallow` asks a crawler not to fetch the page, but a
-url that is linked from somewhere else can still be listed on the strength of that link
-alone, and `noindex` is the part that keeps it out of an index. Neither appears once
-`SITE_URL` is set to a real domain.
+#### www rather than the bare apex
+
+The Amplify domain settings for this app have **"Setup redirect from https://alazyengineer.com to https://www.alazyengineer.com"** enabled, so `www` is the destination and the apex is the source. `SITE_URL` names the destination.
+
+This matters more than it looks. `SITE_URL` resolves every canonical link, OpenGraph url, sitemap entry and RSS link in the build. Pointing it at the apex would put a redirect hop in front of every one of them - every crawl, every shared link, every feed reader.
+
+Requesting either hostname currently returns `200` with no redirect, so this does not match observed behaviour yet. That observation is not worth much: both are served from CloudFront with `s-maxage=31536000` - a year - and the edge returns a cached hit even for a query string it has never seen, so the origin's current behaviour is not visible from outside. The console setting is the configured intent, and a canonical sitting on the redirect's destination is correct whether or not the redirect is live.
+
+`tools/test_site.py` asserts the exact `www` host rather than just the registered domain, so changing it back to the apex fails the render test rather than silently shipping.
 
 ## Publishing a new post
 
@@ -73,7 +95,7 @@ Each file needs frontmatter matching the schema in `src/content/config.ts`:
 
 ### Tags and pillars
 
-Every tag automatically gets a page at `/tags/<tag>/` (`src/pages/tags/[tag].astro`) listing every published post carrying it — nothing to register manually, it's generated from whatever tags actually appear in `src/content/posts/`.
+Every tag automatically gets a page at `/blog/tags/<tag>/` (`src/pages/blog/tags/[tag].astro`) listing every published post carrying it — nothing to register manually, it's generated from whatever tags actually appear in `src/content/posts/`.
 
 The two pillar tags — `harness-engineering` and `self-taught` — are special only in that they're listed in `src/config/pillars.ts` with a label and description, which makes them show up in the "Two threads" section on the homepage and gives their tag page a title/description instead of just the raw tag string. Every post should carry the pillar tag for whichever thread it belongs to (`harness-engineering` or `self-taught`), plus whatever specific tags describe it (e.g. `harness-design`, `language-learning`, `ai-engineering`). A post can carry both pillar tags if it genuinely bridges both — for example a post about applying self-teaching method to harness design.
 
@@ -81,7 +103,7 @@ To add a third pillar later: add an entry to the `PILLARS` array in `src/config/
 
 ### Adding a post by hand
 
-1. Create `src/content/posts/<slug>.md`, where `<slug>` becomes the URL path.
+1. Create `src/content/posts/<slug>.md`, where `<slug>` becomes the URL path under `/blog/`.
 2. Add the frontmatter block above, including the relevant pillar tag, then write the post body in markdown.
 3. Run `npm run build` to confirm it compiles and the schema validates.
 4. Commit on a branch and open a pull request.
@@ -95,6 +117,36 @@ This is the intended way to grow either pillar — hand the harness a short prom
 3. Have it fill in the frontmatter fields above — `title`, `description`, `pubDate`, `tags` (including the pillar tag), and `draft: false` once the post is ready to publish.
 4. Run `npm run build` to verify the content collection schema passes, the new tag page generates, and the site still builds.
 5. Commit the new file on a branch with a plain, descriptive commit message and open a pull request for review before merging.
+
+## Services
+
+The two service branches, their offerings, and their deliverables are data in `src/config/services.ts`, in the same spirit as `pillars.ts`. The services index, both branch pages, the homepage cards, and the sitemap all read from that one list - adding or renaming an offering is a change to that file and nothing else.
+
+An offering is a section on its branch page, not a route of its own. The two automation offerings (a team's workflow, a single engineer's) are variants of one engagement rather than independently sellable things, and giving each a thin page would spread one argument over four URLs.
+
+## The waitlist
+
+`/waitlist/` has three states, decided by two values in `src/config/site.ts`:
+
+| Config | State | What renders |
+|---|---|---|
+| `WAITLIST_FORM_ACTION_URL` set | `form` | A real form posting to that endpoint |
+| `WAITLIST_CONTACT_EMAIL` set | `email` | A mailto link with the destination shown in the copy |
+| neither set (current) | `closed` | An explanation, and no input controls at all |
+
+**It currently ships closed.** That is deliberate rather than unfinished: an enquiry form with nothing behind it silently discards whatever a prospective client writes, which is the failure this repo already avoids for the newsletter. The closed state renders no inputs and no button, so there is no control that looks live.
+
+Opening it is one decision and one line. The decision is which address receives enquiries, and it is a real one because this blog is published anonymously - a role address on this domain keeps that separation, a personal address does not. `tools/test_site.py` enforces the invariant: any form it finds must have an action, and no control outside the newsletter may render disabled.
+
+### The availability claim
+
+The waitlist copy claims exactly three things, all of which are policy rather than history, and all of which should stay true before it goes live:
+
+1. This work runs alongside a full-time job.
+2. A maximum of two concurrent engagements.
+3. Enquiries are reviewed in batches rather than on arrival.
+
+It deliberately makes no claim about current or past clients, capacity being full, or anyone already being served.
 
 ## AdSense configuration
 

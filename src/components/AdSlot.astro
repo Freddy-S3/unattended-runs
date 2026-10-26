@@ -13,9 +13,10 @@ interface Props {
 }
 
 const { slot, format = "auto", label } = Astro.props;
+const hasAdSense = /^ca-pub-\d+$/.test(ADSENSE_PUBLISHER_ID);
 ---
 
-<div class="ad-slot" aria-label={label}>
+{hasAdSense && <div class="ad-slot" aria-label={label}>
   <span class="ad-slot__label">{label}</span>
   <ins
     class="adsbygoogle"
@@ -24,11 +25,11 @@ const { slot, format = "auto", label } = Astro.props;
     data-ad-slot={slot}
     data-ad-format={format}
     data-full-width-responsive="true"></ins>
-</div>
+</div>}
 
-<script is:inline>
+{hasAdSense && <script is:inline>
   (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+</script>}
 
 <style>
   .ad-slot {

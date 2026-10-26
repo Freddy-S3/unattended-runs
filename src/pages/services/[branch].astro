@@ -1,0 +1,64 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { SERVICE_BRANCHES } from "../../config/services";
+import { PILLARS } from "../../config/pillars";
+import { SITE_NAME } from "../../config/site";
+
+export async function getStaticPaths() {
+  return SERVICE_BRANCHES.map((branch) => ({
+    params: { branch: branch.slug },
+    props: { branch },
+  }));
+}
+
+const { branch } = Astro.props;
+const pillar = PILLARS.find((p) => p.tag === branch.relatedTag);
+---
+
+<BaseLayout
+  title={`${branch.label} services — ${SITE_NAME}`}
+  description={branch.tagline}
+  section="services"
+>
+  <p class="section-label">Services</p>
+  <h1 class="page-title">{branch.label}</h1>
+  <p class="lede">{branch.description}</p>
+
+  {branch.offerings.map((offering) => (
+    <section class="offering">
+      <h2>{offering.title}</h2>
+      <p class="offering__audience">{offering.audience}</p>
+      <p>{offering.summary}</p>
+      <h3>What you get</h3>
+      <ul class="offering__list">
+        {offering.deliverables.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  {
+    pillar && (
+      <section class="offering offering--related">
+        <h2>The thinking behind it</h2>
+        <p>
+          This is the applied version of one of the blog's two pillars. The posts under
+          {" "}<a href={`/blog/tags/${pillar.tag}/`}>{pillar.label.toLowerCase()}</a>{" "}
+          cover the method in the open, at no charge, if you would rather read first.
+        </p>
+      </section>
+    )
+  }
+
+  <section class="cta-panel">
+    <h2>Enquiring about {branch.label.toLowerCase()}</h2>
+    <p>
+      Two concurrent engagements at a time, enquiries reviewed in batches. Join the waitlist and
+      say which of the above fits.
+    </p>
+    <a class="cta-panel__action" href="/waitlist/">Join the waitlist &rarr;</a>
+  </section>
+
+  <p><a class="back-link" href="/services/">&larr; All services</a></p>
+</BaseLayout>

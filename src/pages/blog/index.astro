@@ -1,0 +1,83 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { PILLARS } from "../../config/pillars";
+import { SITE_NAME } from "../../config/site";
+
+const allPosts = await getCollection("posts", ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const [featured, ...rest] = posts;
+
+function excerpt(body: string, length = 220) {
+  const plain = body
+    .replace(/^---[\s\S]*?---/, "")
+    .replace(/[#*`>_[\]()]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return plain.length > length ? `${plain.slice(0, length).trim()}…` : plain;
+}
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+}
+---
+
+<BaseLayout
+  title={`Blog — ${SITE_NAME}`}
+  description="Posts on agentic harness engineering and self-directed learning."
+  section="blog"
+>
+  <p class="section-label">Blog</p>
+  <h1 class="page-title">Notes on compounding leverage</h1>
+
+  {
+    featured && (
+      <section class="hero">
+        <p class="hero-kicker">Latest run</p>
+        <h2>
+          <a href={`/blog/${featured.slug}/`}>{featured.data.title}</a>
+        </h2>
+        <div class="post-meta">{formatDate(featured.data.pubDate)}</div>
+        <p class="hero-excerpt">{featured.data.description || excerpt(featured.body, 260)}</p>
+        <a class="read-more" href={`/blog/${featured.slug}/`}>Read the post &rarr;</a>
+      </section>
+    )
+  }
+
+  <p class="section-label">Two threads</p>
+  <ul class="pillar-grid">
+    {PILLARS.map((pillar) => (
+      <li>
+        <a class="pillar-card" href={`/blog/tags/${pillar.tag}/`}>
+          <h3>{pillar.label}</h3>
+          <p>{pillar.description}</p>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  {
+    rest.length > 0 && (
+      <>
+        <p class="section-label">Earlier runs</p>
+        <ul class="post-grid">
+          {rest.map((post) => (
+            <li class="post-card">
+              <h3>
+                <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+              </h3>
+              <div class="post-meta">{formatDate(post.data.pubDate)}</div>
+              <p>{post.data.description || excerpt(post.body)}</p>
+              <div class="tag-row">
+                {post.data.tags.map((tag) => (
+                  <a class="tag" href={`/blog/tags/${tag}/`}>{tag}</a>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </>
+    )
+  }
+</BaseLayout>

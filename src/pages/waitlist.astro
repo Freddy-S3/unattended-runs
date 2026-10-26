@@ -1,0 +1,134 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SERVICE_BRANCHES } from "../config/services";
+import {
+  SITE_NAME,
+  WAITLIST_MODE,
+  WAITLIST_FORM_ACTION_URL,
+  WAITLIST_CONTACT_EMAIL,
+} from "../config/site";
+
+// Three states, decided by config in src/config/site.ts:
+//
+//   "form"   - posts to a real endpoint.
+//   "email"  - renders a mailto link, so the visitor sees the destination.
+//   "closed" - renders no control at all.
+//
+// The "closed" state deliberately has no inputs and no button. A disabled form
+// still reads as "this will work in a moment" to a prospective client, and a
+// form that silently drops an enquiry is worse than a page that says enquiries
+// are not open. Nothing here is styled to look submittable until one of the
+// two config values above is set.
+const mailtoSubject = `Waitlist enquiry - ${SITE_NAME}`;
+const mailtoBody = [
+  "Which service: (training / automation)",
+  "Team size:",
+  "What you are trying to automate or learn:",
+  "Rough timeline:",
+].join("\n");
+const mailtoHref = WAITLIST_CONTACT_EMAIL
+  ? `mailto:${WAITLIST_CONTACT_EMAIL}?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`
+  : undefined;
+---
+
+<BaseLayout
+  title={`Waitlist — ${SITE_NAME}`}
+  description="Limited availability: two concurrent engagements at a time, with enquiries reviewed in batches."
+  section="waitlist"
+>
+  <p class="section-label">Waitlist</p>
+  <h1 class="page-title">Limited availability, honestly described.</h1>
+
+  <p class="lede">
+    This work runs alongside a full-time job, which sets the ceiling: I take a maximum of two
+    engagements at a time, and review new enquiries in batches rather than one by one as they
+    arrive. The waitlist is the queue that comes out of that, not a growth tactic.
+  </p>
+
+  <section class="waitlist-terms">
+    <h2>What joining means</h2>
+    <ul>
+      <li><strong>Two at a time.</strong> A cap I hold to, so an active engagement gets evenings and weekends rather than a slice of them.</li>
+      <li><strong>Reviewed in batches.</strong> I read through the list periodically, not on arrival, so a reply is not immediate by design.</li>
+      <li><strong>No obligation either way.</strong> Joining is not a booking, and I will tell you if what you need is not something I should take on.</li>
+      <li><strong>Scope first.</strong> Anything that proceeds starts with a conversation about fit before any commitment to hours or cost.</li>
+    </ul>
+  </section>
+
+  {
+    WAITLIST_MODE === "form" && (
+      <div class="waitlist-form">
+        <h2>Join the waitlist</h2>
+        <form method="post" action={WAITLIST_FORM_ACTION_URL}>
+          <label>
+            <span>Your email</span>
+            <input type="email" name="email" autocomplete="email" required />
+          </label>
+          <label>
+            <span>Which service</span>
+            <select name="service">
+              {SERVICE_BRANCHES.map((branch) => (
+                <option value={branch.slug}>{branch.label}</option>
+              ))}
+              <option value="unsure">Not sure yet</option>
+            </select>
+          </label>
+          <label>
+            <span>What you are trying to automate or learn</span>
+            <textarea name="context" rows="4"></textarea>
+          </label>
+          <button type="submit">Join the waitlist</button>
+        </form>
+        <p class="fine-print">
+          Your email is used to reply to this enquiry. It is not added to the blog's mailing list.
+        </p>
+      </div>
+    )
+  }
+
+  {
+    WAITLIST_MODE === "email" && (
+      <div class="waitlist-form">
+        <h2>Join the waitlist</h2>
+        <p>
+          Send an enquiry to <strong>{WAITLIST_CONTACT_EMAIL}</strong> and it goes into the same
+          queue. The link below opens your mail client with the useful questions already filled in
+          as prompts.
+        </p>
+        <a class="cta-panel__action" href={mailtoHref}>Email an enquiry &rarr;</a>
+        <p class="fine-print">
+          Your email is used to reply to this enquiry. It is not added to the blog's mailing list.
+        </p>
+      </div>
+    )
+  }
+
+  {
+    WAITLIST_MODE === "closed" && (
+      <div class="waitlist-closed">
+        <h2>The waitlist is not open yet</h2>
+        <p>
+          There is no form here on purpose. An enquiry needs somewhere real to arrive, and there
+          is no address behind this page yet - so a box to type into would quietly lose whatever
+          you wrote, which is worse than saying so.
+        </p>
+        <p>
+          It opens as soon as there is a real destination for enquiries. In the meantime the
+          services pages describe the work in full, and the blog covers the method behind it.
+        </p>
+      </div>
+    )
+  }
+
+  <p class="section-label">What you would be enquiring about</p>
+  <ul class="pillar-grid">
+    {SERVICE_BRANCHES.map((branch) => (
+      <li>
+        <a class="pillar-card" href={`/services/${branch.slug}/`}>
+          <h3>{branch.label}</h3>
+          <p>{branch.tagline}</p>
+        </a>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

@@ -1,8 +1,8 @@
 ---
 import { getCollection } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import { PILLARS } from "../../config/pillars";
-import { SITE_NAME } from "../../config/site";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { PILLARS } from "../../../config/pillars";
+import { SITE_NAME } from "../../../config/site";
 
 export async function getStaticPaths() {
   const allPosts = await getCollection("posts", ({ data }) => !data.draft);
@@ -28,6 +28,7 @@ function formatDate(date: Date) {
 <BaseLayout
   title={`${pillar?.label ?? tag} — ${SITE_NAME}`}
   description={pillar?.description ?? `Posts tagged "${tag}" on ${SITE_NAME}.`}
+  section="blog"
 >
   <p class="section-label">{pillar ? "Pillar" : "Tag"}</p>
   <h1>{pillar?.label ?? tag}</h1>
@@ -37,18 +38,18 @@ function formatDate(date: Date) {
     {posts.map((post) => (
       <li>
         <h3>
-          <a href={`/${post.slug}/`}>{post.data.title}</a>
+          <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
         </h3>
         <div class="post-meta">{formatDate(post.data.pubDate)}</div>
         <p>{post.data.description}</p>
         <div class="tag-row">
           {post.data.tags.map((t) => (
-            <a class="tag" href={`/tags/${t}/`}>{t}</a>
+            <a class="tag" href={`/blog/tags/${t}/`}>{t}</a>
           ))}
         </div>
       </li>
     ))}
   </ul>
 
-  <p><a class="back-link" href="/">&larr; Back to all posts</a></p>
+  <p><a class="back-link" href="/blog/">&larr; Back to all posts</a></p>
 </BaseLayout>

@@ -19,7 +19,7 @@ export const GET: APIRoute = async ({ site }) => {
 
   const items = posts
     .map((post) => {
-      const url = new URL(`/${post.slug}/`, base).toString();
+      const url = new URL(`/blog/${post.slug}/`, base).toString();
       return `  <item>
     <title>${escapeXml(post.data.title)}</title>
     <link>${url}</link>
@@ -34,7 +34,7 @@ export const GET: APIRoute = async ({ site }) => {
 <rss version="2.0">
 <channel>
   <title>${escapeXml(SITE_NAME)}</title>
-  <link>${base}</link>
+  <link>${new URL("/blog/", base).toString()}</link>
   <description>${escapeXml(SITE_DESCRIPTION)}</description>
 ${items}
 </channel>

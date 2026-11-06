@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
 import { SERVICE_BRANCHES } from "../../config/services";
 import { PILLARS } from "../../config/pillars";
 import { SITE_NAME } from "../../config/site";
@@ -13,6 +14,11 @@ export async function getStaticPaths() {
 
 const { branch } = Astro.props;
 const pillar = PILLARS.find((p) => p.tag === branch.relatedTag);
+const relatedPosts = pillar
+  ? (await getCollection("posts", ({ data }) => !data.draft && data.tags.includes(pillar.tag)))
+      .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+      .slice(0, 3)
+  : [];
 ---
 
 <BaseLayout
@@ -40,13 +46,25 @@ const pillar = PILLARS.find((p) => p.tag === branch.relatedTag);
 
   {
     pillar && (
-      <section class="offering offering--related">
-        <h2>The thinking behind it</h2>
-        <p>
-          This is the applied version of one of the blog's two pillars. The posts under
-          {" "}<a href={`/blog/tags/${pillar.tag}/`}>{pillar.label.toLowerCase()}</a>{" "}
-          cover the method in the open, at no charge, if you would rather read first.
+      <section class="related-posts" aria-labelledby="related-posts-heading">
+        <p class="section-label">Proof in public</p>
+        <h2 id="related-posts-heading">See the thinking before you enquire.</h2>
+        <p class="related-posts__intro">
+          This is the applied version of the blog's {pillar.label.toLowerCase()} pillar. Read a
+          few of the working notes first, at no charge, then decide whether the service fits.
         </p>
+        <ul class="related-posts__grid">
+          {relatedPosts.map((post) => (
+            <li>
+              <a href={`/blog/${post.slug}/`}>
+                <strong>{post.data.title}</strong>
+                <span>{post.data.description}</span>
+                <em>Read the note &rarr;</em>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a class="read-more" href={`/blog/tags/${pillar.tag}/`}>See all {pillar.label.toLowerCase()} notes &rarr;</a>
       </section>
     )
   }

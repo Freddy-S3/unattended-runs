@@ -1,0 +1,17 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE_NAME } from "../config/site";
+---
+
+<BaseLayout title={`Page not found - ${SITE_NAME}`} description="That page does not exist." section="home">
+  <p class="section-label">404</p>
+  <h1 class="page-title">That route went nowhere.</h1>
+  <p class="lede">
+    Try the blog for the public notes, or the services page if you are here to talk about a
+    workflow.
+  </p>
+  <div class="not-found-actions">
+    <a class="cta-panel__action" href="/">Back to the homepage &rarr;</a>
+    <a class="read-more" href="/services/">See the services</a>
+  </div>
+</BaseLayout>

@@ -56,6 +56,14 @@ const hasAdSense = /^ca-pub-\d+$/.test(ADSENSE_PUBLISHER_ID);
     <meta property="og:image" content={resolvedOgImage} />
     {pubDate && <meta property="article:published_time" content={pubDate.toISOString()} />}
 
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: SITE_NAME,
+      description,
+      url: Astro.site?.toString(),
+    })} />
+
     <!-- Twitter card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
@@ -74,6 +82,7 @@ const hasAdSense = /^ca-pub-\d+$/.test(ADSENSE_PUBLISHER_ID);
     {ANALYTICS_SITE_ID && <script defer data-domain={ANALYTICS_SITE_ID} src={ANALYTICS_SCRIPT_SRC}></script>}
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <div class="site">
       <header class="site-header">
         <div class="site-header__brand">
@@ -98,7 +107,7 @@ const hasAdSense = /^ca-pub-\d+$/.test(ADSENSE_PUBLISHER_ID);
       </div>
 
       <div class:list={["layout-grid", { "layout-grid--with-sidebar": hasAdSense }]}>
-        <main>
+        <main id="main-content">
           <slot />
         </main>
         {hasAdSense && <aside class="sidebar">

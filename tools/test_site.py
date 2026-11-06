@@ -46,6 +46,9 @@ def check_page(page: Page, url: str, screenshot: Path) -> None:
     banner = page.locator(".header-banner")
     assert banner.count() == 1, f"header banner missing: {url}"
     assert banner.locator("img").get_attribute("src") == "/header-banner.svg", f"header banner asset missing: {url}"
+    assert page.locator("a.skip-link").count() == 1, f"skip link missing: {url}"
+    assert page.locator("main#main-content").count() == 1, f"main landmark missing: {url}"
+    assert page.locator('script[type="application/ld+json"]').count() == 1, f"structured data missing: {url}"
     assert page.locator(".adsbygoogle").count() == 0, f"placeholder ad slot rendered: {url}"
 
     # Both top-level sections must be reachable from every page.
@@ -57,14 +60,20 @@ def check_page(page: Page, url: str, screenshot: Path) -> None:
 
     if url == "/":
         assert page.locator(".cta-panel__action").get_attribute("href") == "/services/", "homepage business CTA missing"
+        assert page.locator(".outcome-grid li").count() == 3, "homepage outcome panel missing"
+        assert page.locator(".proof-panel a").get_attribute("href") == "/blog/", "homepage proof link missing"
     if url == "/services/":
         assert page.locator(".service-process li").count() == 3, "engagement process missing or incomplete"
+        assert page.locator(".fit-panel__grid").count() == 1, "services fit panel missing"
+    if url in ("/services/training/", "/services/automation/"):
+        assert page.locator(".related-posts__grid li").count() > 0, f"public proof links missing: {url}"
     if url == "/waitlist/":
         enquiry_link = page.locator(".waitlist-form a.cta-panel__action")
         assert enquiry_link.count() == 1, "waitlist email link missing"
         assert enquiry_link.get_attribute("href").startswith("mailto:"), "waitlist does not use an email destination"
         assert "nothing is submitted automatically" in page.content(), "waitlist send expectation missing"
         assert "not subscribe you to a mailing list" in page.content(), "waitlist consent boundary missing"
+        assert page.locator(".waitlist-form .fine-print a").count() == 1, "waitlist email fallback missing"
 
     # No control may look live and do nothing.
     #

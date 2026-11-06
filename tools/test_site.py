@@ -73,6 +73,7 @@ def check_page(page: Page, url: str, screenshot: Path) -> None:
         assert enquiry_link.get_attribute("href").startswith("mailto:"), "waitlist does not use an email destination"
         assert "nothing is submitted automatically" in page.content(), "waitlist send expectation missing"
         assert "not subscribe you to a mailing list" in page.content(), "waitlist consent boundary missing"
+        assert page.locator(".waitlist-form .fine-print a").count() == 1, "waitlist email fallback missing"
 
     # No control may look live and do nothing.
     #

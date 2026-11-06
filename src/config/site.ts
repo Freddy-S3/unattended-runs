@@ -83,12 +83,13 @@ export const NEWSLETTER_FORM_ACTION_URL = "";
 //   renders a mailto link rather than a form, so the visitor can see exactly
 //   where their message is going before they send it.
 //
-// Deliberately left empty: this blog is published anonymously, so the address
-// that goes here is a decision about whether to connect it to a named
-// identity, and that is not a default anything should pick. A role address on
-// this domain keeps the separation; a personal address does not.
+// The first version uses an existing personal inbox because there are no
+// clients yet. The waitlist copy makes the boundary explicit: clicking opens
+// a pre-filled email, nothing is submitted automatically, and the sender is
+// not added to the blog mailing list. Replace this with a role address on the
+// domain when the business has enough enquiry volume to justify one.
 export const WAITLIST_FORM_ACTION_URL = "";
-export const WAITLIST_CONTACT_EMAIL = "";
+export const WAITLIST_CONTACT_EMAIL = "shaikhfh1@gmail.com";
 
 /** How enquiries can currently be received, if at all. */
 export const WAITLIST_MODE: "form" | "email" | "closed" = WAITLIST_FORM_ACTION_URL

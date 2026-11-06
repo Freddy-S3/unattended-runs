@@ -55,6 +55,17 @@ def check_page(page: Page, url: str, screenshot: Path) -> None:
     for required in ("/blog/", "/services/", "/waitlist/"):
         assert required in nav_targets, f"nav missing {required}: {url}"
 
+    if url == "/":
+        assert page.locator(".cta-panel__action").get_attribute("href") == "/services/", "homepage business CTA missing"
+    if url == "/services/":
+        assert page.locator(".service-process li").count() == 3, "engagement process missing or incomplete"
+    if url == "/waitlist/":
+        enquiry_link = page.locator(".waitlist-form a.cta-panel__action")
+        assert enquiry_link.count() == 1, "waitlist email link missing"
+        assert enquiry_link.get_attribute("href").startswith("mailto:"), "waitlist does not use an email destination"
+        assert "nothing is submitted automatically" in page.content(), "waitlist send expectation missing"
+        assert "not subscribe you to a mailing list" in page.content(), "waitlist consent boundary missing"
+
     # No control may look live and do nothing.
     #
     # The newsletter signup is excluded deliberately. It renders disabled
@@ -95,7 +106,10 @@ def check_page(page: Page, url: str, screenshot: Path) -> None:
     for href in page.locator("a").evaluate_all("els => els.map(a => a.getAttribute('href'))"):
         assert href and href != "#", f"empty link on {url}"
         parsed = urlparse(href)
-        assert parsed.scheme in ("", "https"), f"unexpected link scheme {href} on {url}"
+        allowed_schemes = ("", "https", "mailto")
+        assert parsed.scheme in allowed_schemes, f"unexpected link scheme {href} on {url}"
+        if parsed.scheme == "mailto":
+            assert urlparse(url).path == "/waitlist/", f"unexpected mailto link on {url}"
 
     assert not page_errors, f"page errors on {url}: {page_errors}"
     assert not request_failures or all(

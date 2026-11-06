@@ -1263,6 +1263,73 @@ article.post-body hr {
   margin: 0;
 }
 
+.related-posts {
+  margin: 0 0 var(--space-8);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg-raised);
+  max-width: var(--measure);
+}
+
+.related-posts .section-label {
+  margin-bottom: var(--space-2);
+}
+
+.related-posts h2 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-lg);
+}
+
+.related-posts__intro {
+  margin: 0 0 var(--space-5);
+  color: var(--color-text-dim);
+  line-height: 1.6;
+}
+
+.related-posts__grid {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.related-posts__grid a {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.related-posts__grid a:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.related-posts__grid strong {
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+}
+
+.related-posts__grid span {
+  color: var(--color-text-dim);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+.related-posts__grid em {
+  color: var(--color-link);
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-style: normal;
+  font-weight: 600;
+}
+
 /* ---------------------------------------------------------------------- */
 /* Calls to action and the waitlist                                        */
 /* ---------------------------------------------------------------------- */

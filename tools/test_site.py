@@ -65,6 +65,8 @@ def check_page(page: Page, url: str, screenshot: Path) -> None:
     if url == "/services/":
         assert page.locator(".service-process li").count() == 3, "engagement process missing or incomplete"
         assert page.locator(".fit-panel__grid").count() == 1, "services fit panel missing"
+    if url in ("/services/training/", "/services/automation/"):
+        assert page.locator(".related-posts__grid li").count() > 0, f"public proof links missing: {url}"
     if url == "/waitlist/":
         enquiry_link = page.locator(".waitlist-form a.cta-panel__action")
         assert enquiry_link.count() == 1, "waitlist email link missing"

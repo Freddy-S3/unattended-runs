@@ -134,9 +134,7 @@ An offering is a section on its branch page, not a route of its own. The two aut
 | `WAITLIST_CONTACT_EMAIL` set | `email` | A mailto link with the destination shown in the copy |
 | neither set (current) | `closed` | An explanation, and no input controls at all |
 
-**It currently ships closed.** That is deliberate rather than unfinished: an enquiry form with nothing behind it silently discards whatever a prospective client writes, which is the failure this repo already avoids for the newsletter. The closed state renders no inputs and no button, so there is no control that looks live.
-
-Opening it is one decision and one line. The decision is which address receives enquiries, and it is a real one because this blog is published anonymously - a role address on this domain keeps that separation, a personal address does not. `tools/test_site.py` enforces the invariant: any form it finds must have an action, and no control outside the newsletter may render disabled.
+**It currently opens an email enquiry.** The first version uses an existing personal inbox because there are no clients yet. The page opens a pre-filled message rather than silently storing a submission, tells the visitor to review it before sending, and says that the sender is not added to a mailing list. A role address on the domain can replace it later without changing the page structure. `tools/test_site.py` enforces the invariant: any form it finds must have an action, no control outside the newsletter may render disabled, and the waitlist must point at an explicit mail destination.
 
 ### The availability claim
 
